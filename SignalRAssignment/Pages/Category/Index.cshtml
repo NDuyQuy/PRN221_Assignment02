@@ -1,0 +1,166 @@
+﻿@page
+@model SignalRAssignment.Pages.Category.IndexModel
+@{
+    ViewData["Title"] = "Categories";
+    byte index = 0;
+}
+
+<div class="container mt-4">
+    <h2>Category List</h2>
+
+    <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
+        Add New Category
+    </button>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">No</th>
+                <th scope="col">Category Name</th>
+                <th scope="col">Description</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var category in Model.Categories)
+            {
+                <tr>
+                    <td>@(++index)</td>
+                    <td>@category.CategoryName</td>
+                    <td>@category.Description</td>
+                    <td>
+                        <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#editCategoryModal" data-id="@category.CategoryID" data-name="@category.CategoryName" data-description="@category.Description">Edit</button>
+                        <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteCategoryModal" data-id="@category.CategoryID">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            <li class="page-item @(Model.Categories.HasPreviousPage ? "" : "disabled")">
+                <a class="page-link" asp-route-pageIndex="@(Model.Categories.PageIndex - 1)">Previous</a>
+            </li>
+            @for (int i = 1; i <= Model.Categories.TotalPages; i++)
+            {
+                <li class="page-item @(i == Model.Categories.PageIndex ? "active" : "")">
+                    <a class="page-link" asp-route-pageIndex="@i">@i</a>
+                </li>
+            }
+            <li class="page-item @(Model.Categories.HasNextPage ? "" : "disabled")">
+                <a class="page-link" asp-route-pageIndex="@(Model.Categories.PageIndex + 1)">Next</a>
+            </li>
+        </ul>
+    </nav>
+</div>
+
+<!-- Add Category Modal -->
+<div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addCategoryModalLabel">Add New Category</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" asp-page-handler="Add">
+                    <div class="mb-3">
+                        <label for="categoryName" class="form-label">Category Name</label>
+                        <input type="text" class="form-control" id="categoryName" name="CategoryName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="categoryDescription" class="form-label">Description</label>
+                        <input type="text" class="form-control" id="categoryDescription" name="Description" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Category Modal -->
+<div class="modal fade" id="editCategoryModal" tabindex="-1" aria-labelledby="editCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editCategoryModalLabel">Edit Category</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" asp-page-handler="Edit">
+                    <input type="hidden" id="editCategoryId" name="CategoryID">
+                    <div class="mb-3">
+                        <label for="editCategoryName" class="form-label">Category Name</label>
+                        <input type="text" class="form-control" id="editCategoryName" name="CategoryName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editCategoryDescription" class="form-label">Description</label>
+                        <input type="text" class="form-control" id="editCategoryDescription" name="Description" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Category Modal -->
+<div class="modal fade" id="deleteCategoryModal" tabindex="-1" aria-labelledby="deleteCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteCategoryModalLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this category?</p>
+                <form method="post" asp-page-handler="Delete">
+                    <input type="hidden" id="deleteCategoryId" name="CategoryID">
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-danger">Confirm Delete</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Attach event listeners to edit and delete buttons to pass data to the modals
+        var editCategoryModal = document.getElementById('editCategoryModal');
+        var deleteCategoryModal = document.getElementById('deleteCategoryModal');
+
+        editCategoryModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var categoryId = button.getAttribute('data-id');
+            var categoryName = button.getAttribute('data-name');
+            var categoryDescription = button.getAttribute('data-description');
+
+            var categoryIdInput = editCategoryModal.querySelector('#editCategoryId');
+            var categoryNameInput = editCategoryModal.querySelector('#editCategoryName');
+            var categoryDescriptionInput = editCategoryModal.querySelector('#editCategoryDescription');
+
+            categoryIdInput.value = categoryId;
+            categoryNameInput.value = categoryName;
+            categoryDescriptionInput.value = categoryDescription;
+        });
+
+        deleteCategoryModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var categoryId = button.getAttribute('data-id');
+
+            var categoryIdInput = deleteCategoryModal.querySelector('#deleteCategoryId');
+            categoryIdInput.value = categoryId;
+        });
+    </script>
+}

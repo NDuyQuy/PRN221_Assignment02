@@ -1,0 +1,38 @@
+﻿@page
+@model SignalRAssignment.Pages.Authen.RegisterModel
+@{
+    ViewData["Title"] = "Register!";
+}
+<link href="~/css/Login.css" rel="stylesheet" type="text/css" asp-append-version="true"/>
+
+<div class="container d-flex justify-content-center align-items-center min-vh-100">
+    <div class="login-container">
+        <h2 class="text-center">Register!</h2>
+
+        <form method="post">
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="floatingUsername" asp-for="@Model.Username" placeholder="Username" />
+                <label for="floatingUsername">Username</label>
+                <span class="text-danger" asp-validation-for="@Model.Username"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input type="password" class="form-control" id="floatingPassword" asp-for="@Model.Password" placeholder="Password" />
+                <label for="floatingPassword">Password</label>
+                <span class="text-danger" asp-validation-for="@Model.Password"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input type="password" class="form-control" id="floatingPassword" asp-for="@Model.ConfirmPassword" placeholder="Confirm Password" />
+                <label for="floatingPassword">Confirm Password</label>
+                <span class="text-danger" asp-validation-for="@Model.ConfirmPassword"></span>
+            </div>
+
+            <button type="submit" class="btn btn-outline-primary btn-lg w-100 mb-3">Register</button>
+
+            <p class="text-center text-danger">Already have an account?</p>
+
+            <a asp-page="./Login" class="btn btn-outline-secondary btn-sm w-100">Login</a>
+        </form>
+    </div>
+</div>

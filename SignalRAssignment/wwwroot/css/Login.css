@@ -1,0 +1,21 @@
+﻿body {
+    background: url('background.png') no-repeat center center fixed;
+    background-size: cover;
+    align-items: center;
+    margin: 0;
+}
+
+.login-container {
+    background-color: rgba(255, 255, 255, 0.9); /* Slightly transparent background */
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 20px; /* Add margin to separate it from the form */
+    word-wrap: break-word; /* Ensure long words break properly */
+}

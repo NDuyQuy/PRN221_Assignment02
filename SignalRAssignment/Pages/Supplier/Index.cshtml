@@ -1,0 +1,136 @@
+﻿@page
+@model SignalRAssignment.Pages.Supplier.IndexModel
+@{
+    ViewData["Title"] = "Suppliers";
+    byte index = 0;
+}
+
+<div class="container mt-4">
+    <h2>Supplier List</h2>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">No</th>
+                <th scope="col">Company Name</th>
+                <th scope="col">Address</th>
+                <th scope="col">Phone</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var supplier in Model.Suppliers)
+            {
+                <tr>
+                    <td>@(++index)</td>
+                    <td>@supplier.CompanyName</td>
+                    <td>@supplier.Address</td>
+                    <td>@supplier.Phone</td>
+                    <td>
+                        <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#editSupplierModal" data-id="@supplier.SupplierID" data-name="@supplier.CompanyName" data-address="@supplier.Address" data-phone="@supplier.Phone">Edit</button>
+                        <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteSupplierModal" data-id="@supplier.SupplierID">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            <li class="page-item @(Model.Suppliers.HasPreviousPage ? "" : "disabled")">
+                <a class="page-link" asp-route-pageIndex="@(Model.Suppliers.PageIndex - 1)">Previous</a>
+            </li>
+            @for (int i = 1; i <= Model.Suppliers.TotalPages; i++)
+            {
+                <li class="page-item @(i == Model.Suppliers.PageIndex ? "active" : "")">
+                    <a class="page-link" asp-route-pageIndex="@i">@i</a>
+                </li>
+            }
+            <li class="page-item @(Model.Suppliers.HasNextPage ? "" : "disabled")">
+                <a class="page-link" asp-route-pageIndex="@(Model.Suppliers.PageIndex + 1)">Next</a>
+            </li>
+        </ul>
+    </nav>
+</div>
+
+<!-- Add Supplier Modal -->
+<div class="modal fade" id="addSupplierModal" tabindex="-1" aria-labelledby="addSupplierModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addSupplierModalLabel">Add New Supplier</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" action="/Supplier/Add">
+                    <div class="mb-3">
+                        <label for="companyName" class="form-label">Company Name</label>
+                        <input type="text" class="form-control" id="companyName" name="CompanyName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="address" class="form-label">Address</label>
+                        <input type="text" class="form-control" id="address" name="Address" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Phone</label>
+                        <input type="text" class="form-control" id="phone" name="Phone" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Supplier</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Supplier Modal -->
+<div class="modal fade" id="editSupplierModal" tabindex="-1" aria-labelledby="editSupplierModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editSupplierModalLabel">Edit Supplier</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" action="/Supplier/Edit">
+                    <input type="hidden" id="editSupplierId" name="SupplierID">
+                    <div class="mb-3">
+                        <label for="editCompanyName" class="form-label">Company Name</label>
+                        <input type="text" class="form-control" id="editCompanyName" name="CompanyName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editAddress" class="form-label">Address</label>
+                        <input type="text" class="form-control" id="editAddress" name="Address" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editPhone" class="form-label">Phone</label>
+                        <input type="text" class="form-control" id="editPhone" name="Phone" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Supplier Modal -->
+<div class="modal fade" id="deleteSupplierModal" tabindex="-1" aria-labelledby="deleteSupplierModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteSupplierModalLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this supplier?</p>
+                <form method="post" action="/Supplier/Delete">
+                    <input type="hidden" id="deleteSupplierId" name="SupplierID">
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-danger">Confirm Delete</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
