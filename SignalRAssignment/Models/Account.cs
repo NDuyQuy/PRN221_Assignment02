@@ -11,7 +11,7 @@ namespace SignalRAssignment.Models
         public string UserName { get; set; } = string.Empty;
         [Required]
         [MaxLength(100)]
-        public string HashPassword { get; set; } = string.Empty;
+        public string HashPassword { get; set; } = "123456";
         [Required]
         public string FullName { get; set; } = string.Empty;
 

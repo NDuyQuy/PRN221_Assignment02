@@ -1,0 +1,83 @@
+﻿@page
+@model SignalRAssignment.Pages.Account.ProfileModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<form method="post">
+    <input type="hidden" asp-for="Account.AccountId" />
+    <input type="hidden" asp-for="Account.UserName" />
+    <div class="d-flex justify-content-center">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title text-center">Welcome,</h5>
+                <h6 class="card-subtitle mb-2 text-muted text-center" id="fullNameDisplay">@Model.Account?.FullName</h6>
+                <div class="row">
+                    <div class="col-4">
+                        <strong>FullName:</strong>
+                    </div>
+                    <div class="col-8">
+                        <span id="fullNameDisplay">@Model.Account?.FullName</span>
+                        <input id="fNameInput" asp-for="Account.FullName" class="form-control form-control-sm d-none" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-4">
+                        <strong>Contact Name:</strong>
+                    </div>
+                    <div class="col-8">
+                        <span id="contactNameDisplay">@Model.Account?.ContactName</span>
+                        <input id="ctcNameInput" asp-for="Account.ContactName" class="form-control form-control-sm d-none" />
+                    </div>
+
+                    <div class="col-4">
+                        <strong>Address:</strong>
+                    </div>
+                    <div class="col-8">
+                        <span id="addressDisplay">@Model.Account?.Address</span>
+                        <input id="addrInput" asp-for="Account.Address" class="form-control form-control-sm d-none" />
+                    </div>
+
+                    <div class="col-4">
+                        <strong>Phone:</strong>
+                    </div>
+                    <div class="col-8">
+                        <span id="phoneDisplay">@Model.Account?.Phone</span>
+                        <input id="phoneInput" asp-for="Account.Phone" class="form-control form-control-sm d-none" />
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between mt-3">
+                    <button type="button" id="editButton" class="btn btn-primary btn-sm">Edit</button>
+                    <button type="button" id="cancelBtn" class="btn btn-outline-secondary d-none">Cancel</button>
+                    <button type="submit" id="saveButton" class="btn btn-success btn-sm d-none">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</form>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#editButton').click(function () {
+            // Show input fields and hide text
+            $('#fullNameDisplay, #contactNameDisplay, #addressDisplay, #phoneDisplay').addClass('d-none');
+            $('input').removeClass('d-none');
+
+            // Toggle buttons
+            $('#editButton').addClass('d-none');
+            $('#saveButton').removeClass('d-none');
+            $('#cancelBtn').removeClass('d-none');
+        });
+
+        $('#cancelBtn').click(function () {
+            // Hide input fields and show text
+            $('#fullNameDisplay, #contactNameDisplay, #addressDisplay, #phoneDisplay').removeClass('d-none');
+            $('input').addClass('d-none');
+
+            $('#editButton').removeClass('d-none');
+            $('#cancelBtn').addClass('d-none');
+            $('#saveButton').addClass('d-none');
+        });
+    });
+</script>

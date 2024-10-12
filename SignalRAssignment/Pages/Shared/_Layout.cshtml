@@ -23,9 +23,53 @@
                             <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
+                            <a class="nav-link text-dark" asp-page="/Account/Profile">Profile</a>
                         </li>
+                        @if (
+                        !string.IsNullOrEmpty(Context.Session.GetString("IsAdmin"))
+                        && Context.Session.GetString("IsAdmin") == "True"
+                        )
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-page="/Category/Index">Categories</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-page="/Supplier/Index">Suppliers</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-page="/Account/Index">Account</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-page="/Order/Index">Orders</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-page="/Product/Index">Products</a>
+                            </li>
+                        }
+                        else
+                        {
+
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-page="/Product/Shop">Products</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-page="/Order/Index"
+                                   asp-route-accountId="@Context.Session.GetInt32("UserID")">
+                                    My Orders
+                                </a>
+                            </li>
+                        }
                     </ul>
+                    @if (!string.IsNullOrEmpty(Context.Session.GetString("IsLogin")))
+                    {
+                        <form method="post">
+                            <button asp-page="/Authen/Login" asp-page-handler="Logout" class="btn btn-danger">Logout</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <a asp-page="/Authen/Login">Login</a>
+                    }
                 </div>
             </div>
         </nav>

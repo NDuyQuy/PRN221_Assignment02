@@ -1,12 +1,13 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using SignalRAssignment.DataContext;
-using SignalRAssignment.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace SignalRAssignment.Pages.Authen
 {
     [BindProperties]
+    [AllowAnonymous]
     public class RegisterModel(ApplicationDBContext context) : PageModel
     {
         private readonly ApplicationDBContext _context = context;

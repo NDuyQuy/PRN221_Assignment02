@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,7 @@ using System.Security.Claims;
 
 namespace SignalRAssignment.Pages.Authen
 {
+    [AllowAnonymous]
     public class LoginModel(ApplicationDBContext context) : PageModel
     {
         private readonly ApplicationDBContext _context = context;
@@ -48,6 +50,9 @@ namespace SignalRAssignment.Pages.Authen
                     {
                         IsPersistent = true
                     };
+                    HttpContext.Session.SetInt32("UserID",account.AccountId);
+                    HttpContext.Session.SetString("IsLogin","True");
+                    HttpContext.Session.SetString("IsAdmin",account.Type==1?"True":"False");
                     await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
                         new ClaimsPrincipal(claimsIdentity), authProperties);
 
@@ -55,6 +60,12 @@ namespace SignalRAssignment.Pages.Authen
                 }
             }
             return Page();
+        }
+        public async Task<IActionResult> OnPostLogoutAsync()
+        {
+            await HttpContext.SignOutAsync();
+            HttpContext.Session.Clear();
+            return RedirectToPage("/Index");
         }
     }
 }

@@ -1,0 +1,52 @@
+﻿@page
+@model SignalRAssignment.Pages.Order.UpdateModel
+@{
+    ViewData["Title"] = "Update Order";
+}
+<h2>Update Order</h2>
+
+<form method="post">
+    <input type="hidden" asp-for="Order.OrderID" readonly />
+    <div class="form-group">
+        <label asp-for="Order.AccountID"></label>
+        <input asp-for="Order.AccountID" class="form-control" readonly/>
+        <span asp-validation-for="Order.AccountID" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Order.OrderDate"></label>
+        <input asp-for="Order.OrderDate" class="form-control" readonly/>
+        <span asp-validation-for="Order.OrderDate" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Order.RequiredDate"></label>
+        <input asp-for="Order.RequiredDate" class="form-control" readonly/>
+        <span asp-validation-for="Order.RequiredDate" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Order.ShippedDate"></label>
+        <input asp-for="Order.ShippedDate" class="form-control" required/>
+        <span asp-validation-for="Order.ShippedDate" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Order.Freight"></label>
+        <input asp-for="Order.Freight" class="form-control" required/>
+        <span asp-validation-for="Order.Freight" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Order.ShipAddress"></label>
+        <input asp-for="Order.ShipAddress" class="form-control" readonly/>
+        <span asp-validation-for="Order.ShipAddress" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-page="./Index" class="btn btn-secondary">Cancel</a>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

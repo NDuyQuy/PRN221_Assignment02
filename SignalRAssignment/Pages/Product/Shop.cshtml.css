@@ -1,0 +1,25 @@
+﻿.card {
+    border: 1px solid #ccc; /* Optional: Add a border */
+    border-radius: 8px; /* Rounded corners */
+    overflow: hidden; /* Ensures content is clipped to card borders */
+}
+
+.image-wrapper {
+    height: 250px; /* Set fixed height for the image wrapper */
+    width: 100%; /* Ensure the wrapper takes full width */
+    overflow: hidden; /* Ensures that the image does not overflow the wrapper */
+    display: flex; /* Enables flex properties for better alignment */
+    justify-content: center; /* Center images horizontally */
+    align-items: center; /* Center images vertically */
+}
+
+.card-img-top {
+    width: 100%; /* Ensure the image takes full width */
+    height: 250px; /* Set a fixed height */
+    object-fit: cover; /* Scale the image to cover the wrapper */
+    object-position: center; /* Center the image within the box */
+}
+
+.card-body {
+    text-align: center; /* Center the text in the card body */
+}

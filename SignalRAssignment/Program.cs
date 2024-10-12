@@ -20,14 +20,22 @@ namespace SignalRAssignment
             builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
             .AddCookie(options =>
             {
-                options.LoginPath = "/Account/Login"; // Redirect to login if not authenticated
-                options.AccessDeniedPath = "/AccessDined";
+                options.LoginPath = "/Authen/Login"; // Redirect to login if not authenticated
+                options.AccessDeniedPath = "/AccessDenied";
                 options.ExpireTimeSpan = TimeSpan.FromDays(1);
                 options.SlidingExpiration = true;
             });
 
-            builder.Services.AddAuthorizationBuilder().AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+            builder.Services.AddAuthorization(options =>
+            {
+                options.FallbackPolicy = new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    .Build();
 
+                options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+                options.AddPolicy("UserOnly", policy => policy.RequireRole("User"));
+            });
+            builder.Services.AddSession();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -37,11 +45,12 @@ namespace SignalRAssignment
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-
+            app.UseSession();
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting();
+
             app.UseAuthentication();
             app.UseAuthorization();
 

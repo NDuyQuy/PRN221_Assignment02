@@ -2,27 +2,24 @@ using CoffeeShop.Helper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 using SignalRAssignment.DataContext;
 
 namespace SignalRAssignment.Pages.Supplier
 {
     [AllowAnonymous]
-    public class IndexModel : PageModel
+    public class IndexModel(ApplicationDBContext context) : PageModel
     {
-        private readonly ApplicationDBContext _context;
-
-        public IndexModel(ApplicationDBContext context)
-        {
-            _context = context;
-        }
+        private readonly ApplicationDBContext _context = context;
 
         public PaginatedList<Models.Supplier> Suppliers { get; set; } = default!;
+        [BindProperty]
         public Models.Supplier Supplier { get; set; } = default!;
         public async Task OnGetAsync(int pageIndex = 1)
         {
             var pageSize = 10; // Define the number of items per page
-            var suppliers = _context.Suppliers.AsQueryable(); // Fetch all suppliers
-            Suppliers = await PaginatedList<Models.Supplier>.CreateAsync(suppliers, pageIndex, pageSize);
+            IQueryable<Models.Supplier> suppliersIQ = (from s in _context.Suppliers select s);
+            Suppliers = await PaginatedList<Models.Supplier>.CreateAsync(suppliersIQ, pageIndex, pageSize);
         }
         public async Task<IActionResult> OnPostAddAsync()
         {
@@ -45,11 +42,11 @@ namespace SignalRAssignment.Pages.Supplier
             return RedirectToPage();
         }
 
-        public async Task<IActionResult> OnPostDeleteAsync(int id)
+        public async Task<IActionResult> OnPostDeleteAsync(int supplierID)
         {
-            var Supplier = await _context.Suppliers.FindAsync(id);
-            if (Supplier == null) return RedirectToPage();
-            _context.Suppliers.Remove(Supplier);
+            var supplier = await _context.Suppliers.FirstOrDefaultAsync(s=>s.SupplierID == supplierID);
+            if (supplier == null) return NotFound();
+            _context.Suppliers.Remove(supplier);
             await _context.SaveChangesAsync();
 
             return RedirectToPage();
