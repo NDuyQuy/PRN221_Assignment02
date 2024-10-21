@@ -1,0 +1,84 @@
+﻿@page
+@model SignalRAssignment.Pages.Product.CartModel
+@{
+    ViewData["Title"] = "Cart";
+}
+
+<h2 class="text-center">Your Cart</h2>
+
+@if (Model.CartList != null && Model.CartList.Count > 0)
+{
+    <form id="cartForm" method="post">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Select</th>
+                    <th>Product Name</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (var i = 0; i < Model.CartList.Count; i++)
+                {
+                    <tr>
+                        <td>
+                            <input type="checkbox" class="select-item" data-index="@i" />
+                        </td>
+                        <td>@Model.CartList[i].Product?.ProductName</td>
+                        <td>@Model.CartList[i].Quantity</td>
+                        <td class="price" data-price="@Model.CartList[i].Product?.Price">
+                            @String.Format("${0:N2}", Model.CartList[i].Product?.Price)
+                        </td>
+                        <td class="total" data-total="@Model.CartList[i].TotalPrice">
+                            @String.Format("${0:N2}", Model.CartList[i].TotalPrice)
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <div id="cart-total-container">
+            <h5 class="text-end text-dark">
+                Total: <span id="cart-total">$0.00</span>
+            </h5>
+        </div>
+        <div class="text-end">
+            <button class="btn btn-success pull-right">Order</button>
+        </div>
+    </form>
+}
+else
+{
+    <h5 class="text-primary text-center">Your cart is empty.</h5>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Function to calculate the total
+            function updateCartTotal() {
+                var total = 0;
+
+                // Loop through all selected checkboxes
+                $('.select-item:checked').each(function () {
+                    var index = $(this).data('index');
+                    var row = $(this).closest('tr');
+
+                    var price = parseFloat(row.find('.price').data('price'));
+                    var quantity = parseFloat(row.find('.total').data('total')) / price;
+
+                    total += price * quantity;
+                });
+
+                // Update the total display
+                $('#cart-total').text('$' + total.toFixed(2));
+            }
+
+            // When a checkbox is clicked, update the cart total
+            $('.select-item').change(function () {
+                updateCartTotal();
+            });
+        });
+    </script>
+}

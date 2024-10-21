@@ -4,17 +4,26 @@
     ViewData["Title"] = "Product Menu";
 }
 
-<h1>Product Menu</h1>
-
+<h2 class="text-center">Product Menu</h2>
 <div class="row mb-4">
     <div class="col-md-6">
-        <form method="get">
-            <input type="text" name="searchTerm" class="form-control" placeholder="Search by product name" />
-            <button type="submit" class="btn btn-primary mt-2">Search</button>
+        <form method="post" asp-page-handler="Search" asp-route-pageIndex="1">
+            <input class="form-control-sm" placeholder="Search product in current list"
+                   asp-for="NameSearch" />
+            <button type="submit" class="btn btn-outline-primary btn-sm">Search</button>
+            <br />
+            <span class="text-danger" asp-validation-for="NameSearch"></span>
         </form>
     </div>
 </div>
 
+<a asp-page-handler="All" asp-route-pageIndex=1>
+    All Products
+</a>
+<h5 class="text-center text-success">
+    @(Model.CurrentFilter == Filter.Category ? Model.Products[0]?.Category?.CategoryName : "")
+    @(Model.CurrentFilter.ToString()) Products
+</h5>
 <div class="row">
     @if (Model.Products != null && Model.Products.Count > 0)
     {
@@ -28,34 +37,193 @@
                     <div class="card-body">
                         <h5 class="card-title">@product.ProductName</h5>
                         <h6 class="card-subtitle mb-2 text-muted">Category: @product.Category?.CategoryName</h6>
-                        <p class="card-text">Price: @product.Price.ToString("C")</p>
-                        <h6 class="text-success">Best Selling</h6>
+                        <p class="card-text">
+                            Price:
+                            @product.Price.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("en-US"))
+                        </p>
                         <form method="post" action="/Order/AddToOrder">
                             <input type="hidden" name="ProductID" value="@product.ProductID" />
-                            <button type="submit" class="btn btn-success">Order Now</button>
+                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                    data-bs-target="#orderModal" data-id="@product.ProductID" id="modalBtn">
+                                Add To Cart
+                            </button>
+                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                    data-bs-target="#orderNowModal" data-id="@product.ProductID" id="modalBtn">
+                                Order Now
+                            </button>
                         </form>
                     </div>
                 </div>
             </div>
 
         }
+
+        // Convert the current query string into a dictionary
+        var queryParams = new Dictionary<string, string>(Request.Query.ToDictionary(q => q.Key, q => q.Value.ToString()));
+
         <nav aria-label="Page navigation">
             <ul class="pagination justify-content-center">
+                <!-- Previous Button -->
                 <li class="page-item @(Model.Products.HasPreviousPage ? "" : "disabled")">
-                    <a class="page-link" asp-route-pageIndex="@(Model.Products.PageIndex - 1)">Previous</a>
+                    @{
+                        queryParams["pageIndex"] = (Model.Products.PageIndex - 1).ToString();
+                    }
+                    <a class="page-link" asp-all-route-data="queryParams">Previous</a>
                 </li>
+
+                <!-- Page Numbers -->
                 @for (int i = 1; i <= Model.Products.TotalPages; i++)
                 {
                     <li class="page-item @(i == Model.Products.PageIndex ? "active" : "")">
-                        <a class="page-link" asp-route-pageIndex="@i">@i</a>
+                        @{
+                            queryParams["pageIndex"] = i.ToString();
+                        }
+                        <a class="page-link" asp-all-route-data="queryParams">@i</a>
                     </li>
                 }
+
+                <!-- Next Button -->
                 <li class="page-item @(Model.Products.HasNextPage ? "" : "disabled")">
-                    <a class="page-link" asp-route-pageIndex="@(Model.Products.PageIndex + 1)">Next</a>
+                    @{
+                        queryParams["pageIndex"] = (Model.Products.PageIndex + 1).ToString();
+                    }
+                    <a class="page-link" asp-all-route-data="queryParams">Next</a>
                 </li>
             </ul>
         </nav>
     }
+    else
+    {
+        <p class="text-center text-danger">No products found</p>
+    }
 </div>
 
+<div class="modal fade" id="orderModal" tabindex="-1" aria-labelledby="orderModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="orderModalLabel">Order Product</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            @if (Model.CurrentUser != null)
+            {
+                <form id="orderForm" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="modal-body">
+                        <input type="hidden" id="productID" name="productID" />
+                        <div class="mb-3">
+                            <label for="quantity" class="form-label">Quantity</label>
+                            <input type="number" class="form-control" id="quantity" name="quantity" min="1" value="1" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-outline-success" id="addToCartBtn">Add To Cart</button>
+                    </div>
+                </form>
+            }
+            else
+            {
+                <p class="text-danger text-center">You need to be login first!</p>
+                <a asp-page="/Authen/Login" class="btn btn-sm btn-outline-success  mb-3">Login here</a>
+            }
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="orderNowModal" tabindex="-1" aria-labelledby="orderNowModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Order Product</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            @if (Model.CurrentUser != null)
+            {
+                <form id="orderForm" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="modal-body">
+                        <input type="hidden" id="productID" name="productID" />
+                        <input type="hidden" asp-for="Order.AccountID" 
+                        value="@Model.CurrentUser.AccountId"/>
+                        <disv class="mb-3">
+                            <label for="quantity" class="form-label">Quantity</label>
+                            <input type="number" class="form-control" id="quantity" name="quantity" min="1" value="1" required>
+                        </disv>
+                        <div class="mb-3">
+                            <label asp-for="Order.ShipAddress"></label>
+                            <input asp-for="Order.ShipAddress" class="form-control" 
+                            value="@Model.CurrentUser.Address" required />
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button class="btn btn-outline-success" asp-page-handler="Order">Order</button>
+                    </div>
+                </form>
 
+            }
+            else
+            {
+                <p class="text-danger text-center">You need to be login first!</p>
+                <a asp-page="/Authen/Login" class="btn btn-sm btn-outline-success  mb-3">Login here</a>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script>
+        $(document).ready(function () {
+            $('#orderModal').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget); // Button that triggered the modal
+                var productId = button.data('id'); // Extract product ID from data-* attribute
+                var modal = $(this);
+                modal.find('#productID').val(productId); // Set the hidden input value inside the modal
+            });
+
+            $('#orderNowModal').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget); // Button that triggered the modal
+                var productId = button.data('id'); // Extract product ID from data-* attribute
+                var modal = $(this);
+                modal.find('#productID').val(productId); // Set the hidden input value inside the modal
+            });
+
+            $('#orderBtn').on('click', function () {
+                sendOrder('orderNow');
+            });
+            $('#addToCartBtn').on('click', function () {
+                sendOrder('AddToCart');
+            });
+
+            function sendOrder(actionType) {
+                const productID = $('#productID').val();
+                const quantity = $('#quantity').val();
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/Product/Shop?handler=' + actionType, // Replace with your actual page model URL
+                    data: {
+                        __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val(),
+                        productID: productID,
+                        quantity: quantity
+                    },
+                    success: function (response) {
+                        if (typeof response !== 'object') {
+                            response = JSON.parse(response); // Try to parse if not already an object
+                        }
+                        alert(response.message);
+
+                        // Optionally close the modal
+                        $('#orderModal').modal('hide');
+                    },
+                    error: function (xhr, status, error) {
+                        // Handle error
+                        console.error(error);
+                        alert('Something went wrong. Please try again.');
+                    }
+                });
+            }
+        });
+    </script>
+}

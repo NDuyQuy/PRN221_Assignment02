@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace CoffeeShop.Helper
 {
-    public class JsonDeserializeHelper
+    public class JsonHelper
     {
         public static string SerializeObject(object obj)
         {
@@ -16,11 +16,16 @@ namespace CoffeeShop.Helper
             };
             return JsonConvert.SerializeObject(obj, settings);
         }
+
+        public static T? DeserializeObject<T>(string json) where T:class
+        {
+            return JsonConvert.DeserializeObject<T>(json);
+        }
     }
 
     public class JsonUpperCaseContractResolver : DefaultContractResolver
     {
-        public static readonly JsonUpperCaseContractResolver Instance = new JsonUpperCaseContractResolver();
+        public static readonly JsonUpperCaseContractResolver Instance = new();
 
         protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
         {
