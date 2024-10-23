@@ -24,7 +24,7 @@
                 {
                     <tr>
                         <td>
-                            <input type="checkbox" class="select-item" data-index="@i" />
+                            <input type="checkbox" class="select-item" data-index="@i" data-product-id="@Model.CartList[i].Product?.ProductID" />
                         </td>
                         <td>@Model.CartList[i].Product?.ProductName</td>
                         <td>@Model.CartList[i].Quantity</td>
@@ -44,7 +44,9 @@
             </h5>
         </div>
         <div class="text-end">
-            <button class="btn btn-success pull-right">Order</button>
+            <!-- Hidden input to store selected products -->
+            <input type="hidden" id="selectedProducts" name="selectedProducts" />
+            <button type="submit" class="btn btn-success pull-right">Order</button>
         </div>
     </form>
 }
@@ -59,6 +61,7 @@ else
             // Function to calculate the total
             function updateCartTotal() {
                 var total = 0;
+                var selectedProducts = [];
 
                 // Loop through all selected checkboxes
                 $('.select-item:checked').each(function () {
@@ -69,10 +72,17 @@ else
                     var quantity = parseFloat(row.find('.total').data('total')) / price;
 
                     total += price * quantity;
+
+                    // Get the product ID and quantity
+                    var productId = $(this).data('product-id');
+                    selectedProducts.push({ id: productId, quantity: quantity });
                 });
 
                 // Update the total display
                 $('#cart-total').text('$' + total.toFixed(2));
+
+                // Set the selected products as a JSON string in the hidden input
+                $('#selectedProducts').val(JSON.stringify(selectedProducts));
             }
 
             // When a checkbox is clicked, update the cart total

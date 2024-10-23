@@ -25,7 +25,8 @@ namespace SignalRAssignment.Models
         [MaxLength(100)]
         public string? Address { get; set; }
 
-        [MaxLength(15)]
+        [MaxLength(10)]
+        [Phone]
         public string? Phone { get; set; }
 
         public virtual ICollection<Order>? Orders { get; set; }

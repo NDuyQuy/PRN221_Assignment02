@@ -37,7 +37,7 @@ namespace SignalRAssignment.Pages.Authen
                 };
                 await _context.Accounts.AddAsync(account);
                 await _context.SaveChangesAsync();
-                return RedirectToPage("Index");
+                return RedirectToPage("./Index");
             }
             else return Page();
         }
